@@ -1,0 +1,55 @@
+version: '3.7'
+services:
+  codecademy:
+    image: codecademy-dev
+    container_name: codecademy
+    restart: always
+    depends_on:
+      - localstack-codecademy
+    ports:
+      - '8080:8080'
+    env_file:
+      - env/codecademy.test.env
+    networks:
+      - dev
+
+  localstack-codecademy:
+    image: localstack/localstack
+    container_name: localstack-codecademy
+    ports:
+      - '4572:4572' #S3
+    environment:
+      - S3_PORT_EXTERNAL:4572
+      - SERVICES=s3, secretsmanager
+      - AWS_ACCESS_KEY_ID=id
+      - AWS_SECRET_ACCESS_KEY=key
+      - DEFAULT_REGION=us-east-1
+      - START_WEB=0
+      - DEBUG=1
+      - DATA_DIR=${DATA_DIR- }
+      - HOSTNAME_EXTERNAL=localstack-codecademy
+    volumes:
+      - ./scripts/localstack/:/scripts/
+      - ./scripts/localstack/init-localstack.sh:/docker-entrypoint-initaws.d/init-localstack.sh
+    networks:
+      - dev
+
+  mysql:
+    image: mysql
+    container_name: mysql
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_0900_ai_ci --skip-character-set-client-handshake
+    restart: always
+    environment:
+      - MYSQL_DATABASE=codecademy
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+    volumes:
+      - ./scripts/create.sql:/migrations/create.sql
+      - ./scripts/mysql-init.sh:/docker-entrypoint-initdb.d/mysql-init.sh
+    ports:
+      - '3306:3306'
+    networks:
+      - dev
+
+networks:
+  dev:
+    external: true
