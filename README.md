@@ -16,7 +16,7 @@ Run `docker-compose up -d` to launch the three containers:
 ## API description
 The application can be reach using the following endpoints :
 * Upload a new picture: `POST` http://localhost:8080/cat/picture
-* Get an upload picture: `GET` http://localhost:8080/cat/picture/{id}
+* Get an uploaded picture: `GET` http://localhost:8080/cat/picture/{id}
 * Update a picture : `PUT` http://localhost:8080/cat/picture/{id}
 * Delete a picture : `DELETE` http://localhost:8080/cat/picture/{id}
 * List all pictures : `GET` http://localhost:8080/cat/pictures
